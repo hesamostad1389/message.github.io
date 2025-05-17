@@ -68,7 +68,7 @@
   </div>
 
   <!-- اینجا SDK لوکال یا CDN خودت رو قرار بده -->
-  <script src="PlayFabClientApi.js"></script>
+  <script src="playfabclientapi.js"></script>
   <script>
     // گرفتن کوئری استرینگ از URL
     function getQueryParam(param) {

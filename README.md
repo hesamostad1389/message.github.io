@@ -61,7 +61,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>بازیابی رمز عبور</h1>
+    <h1> 10 بازیابی رمز عبور</h1>
     <input type="password" id="newPassword" placeholder="رمز عبور جدید را وارد کنید" />
     <button id="resetBtn">تغییر رمز عبور</button>
     <div id="message"></div>

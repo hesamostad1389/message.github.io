@@ -67,10 +67,11 @@
     <div id="message"></div>
   </div>
 
-  <!-- لود رسمی PlayFab SDK -->
   <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
-  <script>
-    // اطمینان از بارگذاری SDK
+
+<script>
+  window.addEventListener('load', function () {
+    // چک می‌کنیم SDK لود شده یا نه
     if (!window.PlayFabClientApi) {
       document.getElementById('message').textContent = "خطا: SDK PlayFab بارگذاری نشد.";
       document.getElementById('message').style.color = "#ff6b6b";

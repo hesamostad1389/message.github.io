@@ -61,7 +61,7 @@
     window.addEventListener('load', function () {
       const messageEl = document.getElementById('message');
 
-      if (!window.PlayFabClientApi) {
+      if (!window.PlayFab) {
         messageEl.textContent = "خطا: SDK PlayFab بارگذاری نشد.";
         messageEl.style.color = "#ff6b6b";
         return;
@@ -84,6 +84,7 @@
       const titleId = "88fcd";
       PlayFab.settings.titleId = titleId;
 
+
       // تابع تغییر رمز عبور
       function resetPassword() {
         const newPassword = document.getElementById('newPassword').value.trim();
@@ -98,7 +99,7 @@
           Token: token
         };
 
-        PlayFabClientApi.ResetPassword(request,
+        PlayFab.ResetPassword(request,
           function(result) {
             messageEl.style.color = "#b5f27f";
             messageEl.textContent = "رمز عبور با موفقیت تغییر کرد!";

@@ -1,106 +1,86 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>بازیابی رمز عبور</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
     body {
-      font-family: 'Vazirmatn', sans-serif;
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      font-family: Vazirmatn, Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
       margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
+      text-align: center;
     }
-
     .container {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 15px;
       padding: 40px 30px;
-      max-width: 450px;
-      width: 100%;
+      max-width: 400px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-      text-align: center;
     }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 25px;
-    }
-
     input[type="password"] {
       width: 100%;
       padding: 12px;
-      border: none;
+      margin: 15px 0;
       border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 20px;
+      border: none;
+      font-size: 16px;
     }
-
     button {
       background-color: #fff;
-      color: #ff4b2b;
-      padding: 12px 25px;
+      color: #2575fc;
       border: none;
+      padding: 12px 25px;
       border-radius: 30px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 16px;
       transition: background-color 0.3s ease;
     }
-
     button:hover {
-      background-color: #f2f2f2;
+      background-color: #e0e0e0;
     }
-
-    .success, .error {
-      display: none;
+    .message {
       margin-top: 20px;
+      font-weight: bold;
     }
-
-    .success { color: #b2ff59; }
-    .error { color: #ffcccb; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/playfab-sdk/2.121.211014/PlayFabClientApi.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>بازیابی رمز عبور</h1>
     <p>رمز عبور جدید خود را وارد کنید:</p>
-    <input type="password" id="newPassword" placeholder="رمز جدید">
-    <button onclick="resetPassword()">تغییر رمز</button>
-    <div class="success" id="successMessage">رمز عبور با موفقیت تغییر کرد ✅</div>
-    <div class="error" id="errorMessage">خطا در تغییر رمز! 😢</div>
+    <input type="password" id="newPassword" placeholder="رمز عبور جدید" />
+    <button onclick="resetPassword()">ثبت و تغییر رمز</button>
+    <div id="message" class="message"></div>
   </div>
 
   <script>
-    function getQueryParam(name) {
+    // تابع گرفتن پارامتر از URL
+    function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
+      return urlParams.get(param);
+    }
+
+    // مقدارهای مهم
+    const token = getQueryParam("token");
+    const titleId = "88FCD"; // اینجا TitleID بازی خودت رو بگذار
+
+    // چک کردن وجود توکن
+    if (!token) {
+      document.getElementById("message").textContent = "توکن بازیابی رمز یافت نشد!";
     }
 
     function resetPassword() {
-      const newPassword = document.getElementById("newPassword").value;
-      const token = getQueryParam("token");
-      const titleId = getQueryParam("titleId");
-
-      if (!newPassword || newPassword.length < 6) {
-        alert("رمز عبور باید حداقل ۶ کاراکتر باشد.");
-        return;
-      }
-
-      if (!token || !titleId) {
-        alert("توکن یا titleId یافت نشد!");
+      const newPassword = document.getElementById("newPassword").value.trim();
+      if (newPassword.length < 6) {
+        document.getElementById("message").textContent = "رمز عبور باید حداقل 6 کاراکتر باشد.";
         return;
       }
 
@@ -111,13 +91,10 @@
         Password: newPassword
       };
 
-      PlayFab.ClientApi.ResetPassword(request, function(result) {
-        document.getElementById("successMessage").style.display = "block";
-        document.getElementById("errorMessage").style.display = "none";
+      PlayFabClient.ResetPassword(request, function(result) {
+        document.getElementById("message").textContent = "رمز عبور شما با موفقیت تغییر کرد!";
       }, function(error) {
-        console.error("Reset error:", error);
-        document.getElementById("successMessage").style.display = "none";
-        document.getElementById("errorMessage").style.display = "block";
+        document.getElementById("message").textContent = "خطا در تغییر رمز: " + error.errorMessage;
       });
     }
   </script>

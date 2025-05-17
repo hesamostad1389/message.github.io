@@ -63,35 +63,46 @@
   <div class="container">
     <h1>بازیابی رمز عبور</h1>
     <input type="password" id="newPassword" placeholder="رمز عبور جدید را وارد کنید" />
-    <button onclick="resetPassword()">تغییر رمز عبور</button>
+    <button id="resetBtn">تغییر رمز عبور</button>
     <div id="message"></div>
   </div>
 
-  <!-- اینجا SDK لوکال یا CDN خودت رو قرار بده -->
+  <!-- لود PlayFab SDK -->
   <script src="playfabclientapi.js"></script>
   <script>
-    // گرفتن کوئری استرینگ از URL
+    // چک می‌کنیم SDK لود شده باشه
+    if (!window.PlayFabClientApi) {
+      document.getElementById('message').textContent = "خطا: فایل playfabclientapi.js پیدا نشد یا بارگذاری نشد.";
+      document.getElementById('message').style.color = "#ff6b6b";
+      throw new Error("PlayFabClientApi not loaded");
+    }
+
+    // گرفتن کوئری استرینگ token
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
     const token = getQueryParam('token');
-    const titleId = "88FCD";  // تایتل آیدی خودت رو اینجا بزار
+    const titleId = "88FCD";  // اینجا تایتل آیدی PlayFab خودت رو بنویس
 
-    // مقدار دهی تنظیمات PlayFab
+    // ست کردن تایتل آیدی
     PlayFab.settings.titleId = titleId;
 
+    // تابع بازیابی رمز عبور
     function resetPassword() {
       const newPassword = document.getElementById('newPassword').value.trim();
       const messageEl = document.getElementById('message');
 
+      // اعتبارسنجی رمز عبور جدید
       if (!newPassword) {
         messageEl.textContent = "لطفاً رمز عبور جدید را وارد کنید.";
+        messageEl.style.color = "#ff6b6b";
         return;
       }
       if (!token) {
         messageEl.textContent = "توکن بازیابی پیدا نشد.";
+        messageEl.style.color = "#ff6b6b";
         return;
       }
 
@@ -104,13 +115,17 @@
         function (result) {
           messageEl.style.color = "#b5f27f";
           messageEl.textContent = "رمز عبور با موفقیت تغییر کرد!";
+          document.getElementById('resetBtn').disabled = true; // غیرفعال کردن دکمه پس از موفقیت
         },
         function (error) {
           messageEl.style.color = "#ff6b6b";
-          messageEl.textContent = "خطا: " + error.errorMessage;
+          messageEl.textContent = "خطا: " + (error.errorMessage || "مشکلی پیش آمده");
           console.error("ResetPassword error:", error);
         });
     }
+
+    // اتصال ایونت به دکمه
+    document.getElementById('resetBtn').addEventListener('click', resetPassword);
   </script>
 </body>
 </html>

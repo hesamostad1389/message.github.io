@@ -69,60 +69,58 @@
 
   <script src="https://download.playfab.com/PlayFabClientApi.js"></script>
 <script>
-  window.addEventListener('load', function () {
-    // چک می‌کنیم SDK لود شده یا نه
-    if (!window.PlayFabClientApi) {
-      document.getElementById('message').textContent = "خطا: SDK PlayFab بارگذاری نشد.";
-      document.getElementById('message').style.color = "#ff6b6b";
-      throw new Error("PlayFabClientApi not loaded");
+window.addEventListener('load', function () {
+  if (!window.PlayFab) {
+    document.getElementById('message').textContent = "خطا: SDK PlayFab بارگذاری نشد.";
+    document.getElementById('message').style.color = "#ff6b6b";
+    throw new Error("PlayFab SDK not loaded");
+  }
+
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  const token = getQueryParam('token');
+  const titleId = "88FCD";  // جایگزین با تایتل آیدی خودت
+
+  PlayFab.settings.titleId = titleId;
+
+  function resetPassword() {
+    const newPassword = document.getElementById('newPassword').value.trim();
+    const messageEl = document.getElementById('message');
+
+    if (!newPassword) {
+      messageEl.textContent = "لطفاً رمز عبور جدید را وارد کنید.";
+      messageEl.style.color = "#ff6b6b";
+      return;
+    }
+    if (!token) {
+      messageEl.textContent = "توکن بازیابی پیدا نشد.";
+      messageEl.style.color = "#ff6b6b";
+      return;
     }
 
-    // گرفتن پارامتر token از URL
-    function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
+    const request = {
+      Password: newPassword,
+      Token: token
+    };
 
-    const token = getQueryParam('token');
-    const titleId = "88FCD";  // جایگزین با تایتل آیدی خودت
-
-    PlayFab.settings.titleId = titleId;
-
-    function resetPassword() {
-      const newPassword = document.getElementById('newPassword').value.trim();
-      const messageEl = document.getElementById('message');
-
-      if (!newPassword) {
-        messageEl.textContent = "لطفاً رمز عبور جدید را وارد کنید.";
+    PlayFabClient.ResetPassword(request,
+      function (result) {
+        messageEl.style.color = "#b5f27f";
+        messageEl.textContent = "رمز عبور با موفقیت تغییر کرد!";
+        document.getElementById('resetBtn').disabled = true;
+      },
+      function (error) {
         messageEl.style.color = "#ff6b6b";
-        return;
-      }
-      if (!token) {
-        messageEl.textContent = "توکن بازیابی پیدا نشد.";
-        messageEl.style.color = "#ff6b6b";
-        return;
-      }
+        messageEl.textContent = "خطا: " + (error.errorMessage || "مشکلی پیش آمده");
+        console.error("ResetPassword error:", error);
+      });
+  }
 
-      const request = {
-        Password: newPassword,
-        Token: token
-      };
-
-      PlayFabClientApi.ResetPassword(request,
-        function (result) {
-          messageEl.style.color = "#b5f27f";
-          messageEl.textContent = "رمز عبور با موفقیت تغییر کرد!";
-          document.getElementById('resetBtn').disabled = true;
-        },
-        function (error) {
-          messageEl.style.color = "#ff6b6b";
-          messageEl.textContent = "خطا: " + (error.errorMessage || "مشکلی پیش آمده");
-          console.error("ResetPassword error:", error);
-        });
-    }
-
-    document.getElementById('resetBtn').addEventListener('click', resetPassword);
-  }); // ← این بسته شدن فانکشنه
-</script> 
+  document.getElementById('resetBtn').addEventListener('click', resetPassword);
+});
+</script>
 </body>
 </html>
